@@ -31,12 +31,12 @@ import org.junit.jupiter.api.Test
 class SimpleRelocatorTestNew {
   @Test
   fun testNoNpeRelocateClass() {
-    SimpleRelocator("foo", "bar", null, null, true).relocateClass("foo")
+    SimpleRelocatorNew("foo", "bar", null, null, true).relocateClass("foo")
   }
 
   @Test
   fun testCanRelocatePath() {
-    var relocator = SimpleRelocator("org.foo", null, null, null)
+    var relocator = SimpleRelocatorNew("org.foo", null, null, null)
     assertTrue(relocator.canRelocatePath("org/foo/Class"))
     assertTrue(relocator.canRelocatePath("org/foo/Class.class"))
     assertTrue(relocator.canRelocatePath("org/foo/bar/Class"))
@@ -46,7 +46,7 @@ class SimpleRelocatorTestNew {
     assertFalse(relocator.canRelocatePath("org/Foo/Class"))
     assertFalse(relocator.canRelocatePath("org/Foo/Class.class"))
 
-    relocator = SimpleRelocator(
+    relocator = SimpleRelocatorNew(
       "org.foo",
       null,
       null,
@@ -71,13 +71,13 @@ class SimpleRelocatorTestNew {
 
   @Test
   fun testCanRelocateClass() {
-    var relocator = SimpleRelocator("org.foo", null, null, null)
+    var relocator = SimpleRelocatorNew("org.foo", null, null, null)
     assertTrue(relocator.canRelocateClass("org.foo.Class"))
     assertTrue(relocator.canRelocateClass("org.foo.bar.Class"))
     assertFalse(relocator.canRelocateClass("com.foo.bar.Class"))
     assertFalse(relocator.canRelocateClass("org.Foo.Class"))
 
-    relocator = SimpleRelocator(
+    relocator = SimpleRelocatorNew(
       "org.foo",
       null,
       null,
@@ -96,17 +96,17 @@ class SimpleRelocatorTestNew {
 
   @Test
   fun testCanRelocateRawString() {
-    var relocator = SimpleRelocator("org/foo", null, null, null, true)
+    var relocator = SimpleRelocatorNew("org/foo", null, null, null, true)
     assertTrue(relocator.canRelocatePath("(I)org/foo/bar/Class;"))
 
-    relocator = SimpleRelocator("^META-INF/org.foo.xml$", null, null, null, true)
+    relocator = SimpleRelocatorNew("^META-INF/org.foo.xml$", null, null, null, true)
     assertTrue(relocator.canRelocatePath("META-INF/org.foo.xml"))
   }
 
   // MSHADE-119, make sure that the easy part of this works.
   @Test
   fun testCanRelocateAbsClassPath() {
-    val relocator = SimpleRelocator("org.apache.velocity", "org.apache.momentum", null, null)
+    val relocator = SimpleRelocatorNew("org.apache.velocity", "org.apache.momentum", null, null)
     assertEquals(
       "/org/apache/momentum/mass.properties",
       relocator.relocatePath("/org/apache/velocity/mass.properties"),
@@ -115,7 +115,7 @@ class SimpleRelocatorTestNew {
 
   @Test
   fun testCanRelocateAbsClassPathWithExcludes() {
-    val relocator = SimpleRelocator(
+    val relocator = SimpleRelocatorNew(
       "org/apache/velocity",
       "org/apache/momentum",
       null,
@@ -129,7 +129,7 @@ class SimpleRelocatorTestNew {
 
   @Test
   fun testCanRelocateAbsClassPathWithIncludes() {
-    val relocator = SimpleRelocator(
+    val relocator = SimpleRelocatorNew(
       "org/apache/velocity",
       "org/apache/momentum",
       mutableListOf<String>("org/apache/velocity/included/*"),
@@ -143,34 +143,34 @@ class SimpleRelocatorTestNew {
 
   @Test
   fun testRelocatePath() {
-    var relocator = SimpleRelocator("org.foo", null, null, null)
+    var relocator = SimpleRelocatorNew("org.foo", null, null, null)
     assertEquals("hidden/org/foo/bar/Class.class", relocator.relocatePath("org/foo/bar/Class.class"))
 
-    relocator = SimpleRelocator("org.foo", "private.stuff", null, null)
+    relocator = SimpleRelocatorNew("org.foo", "private.stuff", null, null)
     assertEquals("private/stuff/bar/Class.class", relocator.relocatePath("org/foo/bar/Class.class"))
   }
 
   @Test
   fun testRelocateClass() {
-    var relocator = SimpleRelocator("org.foo", null, null, null)
+    var relocator = SimpleRelocatorNew("org.foo", null, null, null)
     assertEquals("hidden.org.foo.bar.Class", relocator.relocateClass("org.foo.bar.Class"))
 
-    relocator = SimpleRelocator("org.foo", "private.stuff", null, null)
+    relocator = SimpleRelocatorNew("org.foo", "private.stuff", null, null)
     assertEquals("private.stuff.bar.Class", relocator.relocateClass("org.foo.bar.Class"))
   }
 
   @Test
   fun testRelocateRawString() {
-    var relocator = SimpleRelocator("Lorg/foo", "Lhidden/org/foo", null, null, true)
+    var relocator = SimpleRelocatorNew("Lorg/foo", "Lhidden/org/foo", null, null, true)
     assertEquals("(I)Lhidden/org/foo/bar/Class;", relocator.relocatePath("(I)Lorg/foo/bar/Class;"))
 
-    relocator = SimpleRelocator("^META-INF/org.foo.xml$", "META-INF/hidden.org.foo.xml", null, null, true)
+    relocator = SimpleRelocatorNew("^META-INF/org.foo.xml$", "META-INF/hidden.org.foo.xml", null, null, true)
     assertEquals("META-INF/hidden.org.foo.xml", relocator.relocatePath("META-INF/org.foo.xml"))
   }
 
   @Test
   fun testRelocateMavenFiles() {
-    val relocator = SimpleRelocator(
+    val relocator = SimpleRelocatorNew(
       "META-INF/maven",
       "META-INF/shade/maven",
       null,
@@ -186,7 +186,7 @@ class SimpleRelocatorTestNew {
 
   @Test
   fun testRelocateSourceWithExcludesRaw() {
-    val relocator = SimpleRelocator(
+    val relocator = SimpleRelocatorNew(
       "org.apache.maven",
       "com.acme.maven",
       mutableListOf<String>("foo.bar", "zot.baz"),
@@ -199,18 +199,18 @@ class SimpleRelocatorTestNew {
   @Test
   fun testRelocateSourceWithExcludes() {
     // Main relocator with in-/excludes
-    val relocator = SimpleRelocator(
+    val relocator = SimpleRelocatorNew(
       "org.apache.maven",
       "com.acme.maven",
       mutableListOf<String>("foo.bar", "zot.baz"),
       mutableListOf<String>("irrelevant.exclude", "org.apache.maven.exclude1", "org.apache.maven.sub.exclude2"),
     )
     // Make sure not to replace variables 'io' and 'ioInput', package 'java.io'
-    val ioRelocator = SimpleRelocator("io", "shaded.io", null, null)
+    val ioRelocator = SimpleRelocatorNew("io", "shaded.io", null, null)
     // Check corner case which was not working in PR #100
-    val asmRelocator = SimpleRelocator("org.objectweb.asm", "aj.org.objectweb.asm", null, null)
+    val asmRelocator = SimpleRelocatorNew("org.objectweb.asm", "aj.org.objectweb.asm", null, null)
     // Make sure not to replace 'foo' package by path-like 'shaded/foo'
-    val fooRelocator = SimpleRelocator("foo", "shaded.foo", null, mutableListOf<String>("foo.bar"))
+    val fooRelocator = SimpleRelocatorNew("foo", "shaded.foo", null, mutableListOf<String>("foo.bar"))
     assertEquals(
       relocatedFile,
       fooRelocator.applyToSourceContent(
@@ -294,11 +294,11 @@ class SimpleRelocatorTestNew {
       }
     """.trimIndent()
 
-    private fun SimpleRelocator.relocatePath(path: String): String {
+    private fun SimpleRelocatorNew.relocatePath(path: String): String {
       return relocatePath(RelocatePathContext.builder().path(path).build())
     }
 
-    private fun SimpleRelocator.relocateClass(className: String): String {
+    private fun SimpleRelocatorNew.relocateClass(className: String): String {
       return relocateClass(RelocateClassContext.builder().className(className).build())
     }
   }
