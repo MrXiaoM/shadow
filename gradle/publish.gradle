@@ -16,6 +16,7 @@ if (System.env.CIRCLE_TAG && System.env.CIRCLE_TAG =~  /^\d\.\d\.\d$/) {
 ext.isSnapshot = version.endsWith("SNAPSHOT")
 
 def pomConfig = {
+    url "https://github.com/MrXiaoM/shadow"
     licenses {
         license {
             name 'The Apache Software License, Version 2.0'
@@ -51,6 +52,7 @@ publishing {
 
             pom.withXml {
                 def root = asNode()
+                root.appendNode('name', "shadow")
                 root.appendNode('description', 'Gradle plugin to combine/relocate dependencies in a single Jar.')
                 root.children().last() + pomConfig
             }
