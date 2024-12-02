@@ -32,12 +32,17 @@ def pomConfig = {
     }
 }
 
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
 publishing {
     publications {
         plugin(MavenPublication) {
             shadow.component(it)
-            //artifact "sourcesJar"
-            //artifact "javadocJar"
+            artifact sourcesJar
+            artifact javadocJar
 
             pom.withXml {
                 def root = asNode()
