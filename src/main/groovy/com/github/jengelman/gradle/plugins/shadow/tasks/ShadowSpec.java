@@ -10,6 +10,8 @@ import org.gradle.api.Action;
 import org.gradle.api.file.CopySpec;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import java.util.List;
 
 interface ShadowSpec extends CopySpec {
     ShadowSpec minimize();
@@ -33,6 +35,14 @@ interface ShadowSpec extends CopySpec {
     ShadowSpec mergeGroovyExtensionModules();
 
     ShadowSpec append(String resourcePath);
+
+    List<String> getIgnoreRelocations();
+
+    ShadowJar setIgnoreRelocations(List<String> ignoreRelocations);
+
+    ShadowJar ignoreRelocations(List<String> files);
+
+    ShadowJar ignoreRelocations(String... files);
 
     ShadowSpec relocate(String pattern, String destination);
 

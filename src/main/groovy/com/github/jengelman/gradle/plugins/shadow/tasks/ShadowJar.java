@@ -23,6 +23,7 @@ import org.gradle.api.tasks.util.PatternSet;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -31,6 +32,7 @@ public class ShadowJar extends Jar implements ShadowSpec {
 
     private List<Transformer> transformers;
     private List<Relocator> relocators;
+    private @Input List<String> ignoreRelocations;
     private List<FileCollection> configurations;
     private transient DependencyFilter dependencyFilter;
 
@@ -60,6 +62,7 @@ public class ShadowJar extends Jar implements ShadowSpec {
         setManifest(new DefaultInheritManifest(getServices().get(FileResolver.class)));
         transformers = new ArrayList<>();
         relocators = new ArrayList<>();
+        ignoreRelocations = new ArrayList<>();
         configurations = new ArrayList<>();
 
         this.getInputs().property("minimize", new Callable<Boolean>() {
@@ -115,7 +118,7 @@ public class ShadowJar extends Jar implements ShadowSpec {
         DocumentationRegistry documentationRegistry = getServices().get(DocumentationRegistry.class);
         final UnusedTracker unusedTracker = minimizeJar ? UnusedTracker.forProject(getApiJars(), getSourceSetsClassesDirs().getFiles(), getToMinimize()) : null;
         return new ShadowCopyAction(getArchiveFile().get().getAsFile(), getInternalCompressor(), documentationRegistry,
-                this.getMetadataCharset(), transformers, relocators, getRootPatternSet(), shadowStats,
+                this.getMetadataCharset(), transformers, relocators, ignoreRelocations, getRootPatternSet(), shadowStats,
                 versionUtil, isPreserveFileTimestamps(), minimizeJar, unusedTracker);
     }
 
@@ -336,6 +339,25 @@ public class ShadowJar extends Jar implements ShadowSpec {
         } catch (NoSuchMethodException e) {
         } catch (InvocationTargetException e) {
         }
+        return this;
+    }
+
+    public List<String> getIgnoreRelocations() {
+        return ignoreRelocations;
+    }
+
+    public ShadowJar setIgnoreRelocations(List<String> ignoreRelocations) {
+        this.ignoreRelocations = ignoreRelocations;
+        return this;
+    }
+
+    public ShadowJar ignoreRelocations(List<String> files) {
+        ignoreRelocations.addAll(files);
+        return this;
+    }
+
+    public ShadowJar ignoreRelocations(String... files) {
+        ignoreRelocations.addAll(Arrays.asList(files));
         return this;
     }
 

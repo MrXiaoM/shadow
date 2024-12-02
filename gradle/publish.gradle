@@ -1,7 +1,7 @@
 apply plugin: 'maven-publish'
 apply plugin: "com.gradle.plugin-publish"
 
-group = 'com.github.johnrengelman'
+group = 'top.mrxiaom'
 
 def versionString = file('src/main/resources/shadow-version.txt').text.trim()
 if (System.env.CIRCLE_TAG && System.env.CIRCLE_TAG =~  /^\d\.\d\.\d$/) {
@@ -25,9 +25,9 @@ def pomConfig = {
     }
     developers {
         developer {
-            id 'jengelman'
-            name 'John Engelman'
-            email 'john.r.engelman@gmail.com'
+            id 'mrxiaom'
+            name 'MrXiaoM'
+            email 'mrxiaom@qq.com'
         }
     }
 }
@@ -36,8 +36,8 @@ publishing {
     publications {
         plugin(MavenPublication) {
             shadow.component(it)
-            artifact sourcesJar
-            artifact javadocJar
+            //artifact "sourcesJar"
+            //artifact "javadocJar"
 
             pom.withXml {
                 def root = asNode()
@@ -45,6 +45,9 @@ publishing {
                 root.children().last() + pomConfig
             }
         }
+    }
+    repositories {
+        mavenLocal()
     }
 }
 
@@ -77,14 +80,14 @@ tasks.whenTaskAdded {
 }
 
 pluginBundle {
-    website = 'https://github.com/johnrengelman/shadow'
-    vcsUrl = 'https://github.com/johnrengelman/shadow'
+    website = 'https://github.com/MrXiaoM/shadow'
+    vcsUrl = 'https://github.com/MrXiaoM/shadow'
     tags = ['onejar', 'shade', 'fatjar', 'uberjar']
 
     plugins {
         shadowPlugin {
-            id = 'com.github.johnrengelman.shadow'
-            displayName = 'Shadow Plugin'
+            id = 'top.mrxiaom.shadow'
+            displayName = 'Shadow Plugin fork'
             description = "Gradle plugin to create fat/uber JARs, apply file transforms, and relocate packages for applications and libraries. Gradle version of Maven's Shade plugin."
         }
     }

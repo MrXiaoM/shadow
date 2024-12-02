@@ -50,6 +50,7 @@ class ShadowCopyAction implements CopyAction {
     private final DocumentationRegistry documentationRegistry
     private final List<Transformer> transformers
     private final List<Relocator> relocators
+    private final List<String> ignoreRelocations
     private final PatternSet patternSet
     private final ShadowStats stats
     private final String encoding
@@ -59,7 +60,7 @@ class ShadowCopyAction implements CopyAction {
     private final UnusedTracker unusedTracker
 
     ShadowCopyAction(File zipFile, ZipCompressor compressor, DocumentationRegistry documentationRegistry,
-                            String encoding, List<Transformer> transformers, List<Relocator> relocators,
+                            String encoding, List<Transformer> transformers, List<Relocator> relocators, List<String> ignoreRelocations,
                             PatternSet patternSet, ShadowStats stats, GradleVersionUtil util,
                             boolean preserveFileTimestamps, boolean minimizeJar, UnusedTracker unusedTracker) {
 
@@ -68,6 +69,7 @@ class ShadowCopyAction implements CopyAction {
         this.documentationRegistry = documentationRegistry
         this.transformers = transformers
         this.relocators = relocators
+        this.ignoreRelocations = ignoreRelocations
         this.patternSet = patternSet
         this.stats = stats
         this.encoding = encoding
@@ -339,6 +341,22 @@ class ShadowCopyAction implements CopyAction {
          */
         private void remapClass(InputStream classInputStream, String path, long lastModified) {
             InputStream is = classInputStream
+
+            if (ignoreRelocations.contains(path)) {
+                try {
+                    // Now we put it back on so the class file is written out with the right extension.
+                    ZipEntry archiveEntry = new ZipEntry(path)
+                    archiveEntry.setTime(getArchiveTimeFor(lastModified))
+                    zipOutStr.putNextEntry(archiveEntry)
+                    IOUtils.copyLarge(is, zipOutStr)
+                    zipOutStr.closeEntry()
+                } catch (ZipException e) {
+                    log.warn("We have a duplicate " + mappedName + " in source project")
+                } finally {
+                    is.close()
+                }
+                return
+            }
             ClassReader cr = new ClassReader(is)
 
             // We don't pass the ClassReader here. This forces the ClassWriter to rebuild the constant pool.
