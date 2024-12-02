@@ -30,6 +30,11 @@ def pomConfig = {
             email 'mrxiaom@qq.com'
         }
     }
+    scm {
+        url "https://github.com/MrXiaoM/shadow"
+        connection "scm:git:https://github.com/MrXiaoM/shadow.git"
+        developerConnection "scm:git:https://github.com/MrXiaoM/shadow.git"
+    }
 }
 
 java {
